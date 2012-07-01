@@ -26,9 +26,9 @@ To build the example:
    https://github.com/esden/summon-arm-toolchain
 
  * Build stlink from https://github.com/texane/stlink
-
  * put the st-flash command from stlink somewhere in your path
    (e.g. by creating a soft link)
+ * install the udev rules from stlink as described in the stlink README
 
  * run "make"
 
@@ -55,7 +55,7 @@ To test the example:
 
  * "dmesg" and "ls -l /dev/ttyACM*" to determine device name
 
- * run "screen -l /dev/ttyACM0" (or whatever teh device name is)
+ * run "screen -l /dev/ttyACM0" (or whatever the device name is)
 
  * Type some things, and confirm that the LEDs near the reset switch on
    the discovery board toggle as you type keys.  Also, confirm that the
