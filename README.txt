@@ -59,8 +59,10 @@ To test the example:
 
  * Type some things, and confirm that the LEDs near the reset switch on
    the discovery board toggle as you type keys.  Also, confirm that the
-   letters you see on the screen are one letter further in the alphabet
-   from what you typed.
+   letters you see on the screen are thirteen letters further in the
+   alphabet from what you typed. (An easy test of "rot13" is simply typing
+   again the output and it should be transformed back to what you typed
+   in the first place.)
 
  * Press 'Ctrl-A' '\' and then 'y' to close the screen session when
    you're done.
