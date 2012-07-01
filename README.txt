@@ -16,7 +16,7 @@ The project is a slightly modified version of the USB CDC example.
 
 The original example just echoed back whatever it received, so
 to be more convincing that something is happening, a little code was
-added to swap each letter with the next letter in the alphabet and
+added to swap each letter with the another letter in the alphabet and
 flash the LEDs when data comes in.
 
 To build the example:
