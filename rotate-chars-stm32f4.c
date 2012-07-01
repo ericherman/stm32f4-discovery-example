@@ -111,7 +111,7 @@ void setup_usb_fullspeed()
 	usbd_register_set_config_callback(cdcacm_set_config);
 }
 
-void setup_gpio()
+void setup_leds()
 {
 	/* enable the four LEDs */
 	gpio_mode_setup(GPIOD, GPIO_MODE_OUTPUT,
@@ -125,7 +125,7 @@ int main(void)
 	setup_main_clock();
 	setup_peripheral_clocks();
 	setup_usb_fullspeed();
-	setup_gpio();
+	setup_leds();
 
 	while (1)
 		usbd_poll();
