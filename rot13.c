@@ -33,4 +33,3 @@ void rotate_letters(char *buf, unsigned int len)
 		}
 	}
 }
-

@@ -60,7 +60,7 @@ static void cdcacm_data_rx_cb(u8 ep)
 	int len = usbd_ep_read_packet(0x01, buf, 64);
 
 	if (len) {
-		rotate_letters(buf, (unsigned int) len);
+		rotate_letters(buf, (unsigned int)len);
 		while (usbd_ep_write_packet(0x82, buf, len) == 0) ;
 	}
 
@@ -91,14 +91,14 @@ void setup_main_clock()
 void setup_peripheral_clocks()
 {
 	rcc_peripheral_enable_clock(&RCC_AHB1ENR,
-		/* GPIO A */
-		RCC_AHB1ENR_IOPAEN |
-		/* GPIO D */
-		RCC_AHB1ENR_IOPDEN);
+				    /* GPIO A */
+				    RCC_AHB1ENR_IOPAEN |
+				    /* GPIO D */
+				    RCC_AHB1ENR_IOPDEN);
 
 	rcc_peripheral_enable_clock(&RCC_AHB2ENR,
-		/* USB OTG */
-		RCC_AHB2ENR_OTGFSEN);
+				    /* USB OTG */
+				    RCC_AHB2ENR_OTGFSEN);
 }
 
 void setup_usb_fullspeed()
