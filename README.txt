@@ -14,14 +14,17 @@ Use GNU screen to test the stm32f4-discovery's firmware.
 
 ====================================================================
 
-The project is a slightly modified version of the USB CDC example.
+The project started as Kendrick Shaw's slightly modified version of
+the USB CDC example.
 
 The original example just echoed back whatever it received, so
 to be more convincing that something is happening, a little code was
 added to swap each letter with the another letter in the alphabet and
-flash the LEDs when data comes in. Next an example using SPI to read
-data from the on-board accelerometer was added; everytime a character
-is sent, the accelerometer's X, Y, and Z values are returned.
+flash the LEDs when data comes in.
+
+Next an example using SPI to read data from the on-board accelerometer
+was added. Everytime a character is sent, the accelerometer's X, Y,
+and Z values are returned.
 
 To build an example:
 
