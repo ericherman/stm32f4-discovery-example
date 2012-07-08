@@ -19,7 +19,9 @@ The project is a slightly modified version of the USB CDC example.
 The original example just echoed back whatever it received, so
 to be more convincing that something is happening, a little code was
 added to swap each letter with the another letter in the alphabet and
-flash the LEDs when data comes in.
+flash the LEDs when data comes in. Next an example using SPI to read
+data from the on-board accelerometer was added; everytime a character
+is sent, the accelerometer's X, Y, and Z values are returned.
 
 To build an example:
 
@@ -63,7 +65,7 @@ To test an example:
  * Type some things, and confirm that the LEDs near the reset switch on
    the discovery board toggle as you type keys.
 
- * If running the "rotate-chars" example, you man confirm that the
+ * If running the "rotate-chars" example, you may confirm that the
    letters you see on the screen are thirteen letters further in the
    alphabet from what you typed. (An easy test of "rot13" is simply typing
    again the output and it should be transformed back to what you typed
