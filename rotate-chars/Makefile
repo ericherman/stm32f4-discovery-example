@@ -22,7 +22,7 @@
 ##
 
 BINARY = rotate-chars-stm32f4
-LDSCRIPT = stm32f4-discovery.ld
+LDSCRIPT = ../stm32f4-discovery.ld
 
 PREFIX	?= arm-none-eabi
 # PREFIX		?= arm-elf
@@ -34,7 +34,7 @@ GDB		= $(PREFIX)-gdb
 # Uncomment this line if you want to use the installed (not local) library.
 #TOOLCHAIN_DIR := $(shell dirname `which $(CC)`)/../$(PREFIX)
 #TOOLCHAIN_DIR   = ../../../../..
-TOOLCHAIN_DIR   = ./libopencm3
+TOOLCHAIN_DIR   = ../libopencm3
 CFLAGS		+= -Os -g -Wall -Wextra -I$(TOOLCHAIN_DIR)/include \
 		   -fno-common -mcpu=cortex-m4 -mthumb -msoft-float -MD -DSTM32F4
 LDSCRIPT	?= $(BINARY).ld

@@ -3,6 +3,8 @@ an stm32f4 discovery board.
 
 In short:
 
+Choose an example: "cd rotate-chars"
+
 Use "make" to build the firmware.
 
 Use "make flash" to push the firmware to the stm32f4-discovery.
@@ -19,7 +21,7 @@ to be more convincing that something is happening, a little code was
 added to swap each letter with the another letter in the alphabet and
 flash the LEDs when data comes in.
 
-To build the example:
+To build an example:
 
  * Install the arm developer tools (and add to PATH) with
    summon-arm-toolchain from
@@ -30,7 +32,8 @@ To build the example:
    (e.g. by creating a soft link)
  * install the udev rules from stlink as described in the stlink README
 
- * run "make"
+ * cd to an example directory, for instance "cd rotate-chars"
+ * run "make" in the example directory
 
 
 To flash the example to the discovery board:
@@ -45,7 +48,7 @@ To flash the example to the discovery board:
  * Press the reset button on the discovery board
 
 
-To test the example:
+To test an example:
 
  * It may be useful to unplug other USB devies like phones or Arduinos
    so you don't have to figure out which ttyACM* device to use
@@ -58,7 +61,9 @@ To test the example:
  * run "screen -l /dev/ttyACM0" (or whatever the device name is)
 
  * Type some things, and confirm that the LEDs near the reset switch on
-   the discovery board toggle as you type keys.  Also, confirm that the
+   the discovery board toggle as you type keys.
+
+ * If running the "rotate-chars" example, you man confirm that the
    letters you see on the screen are thirteen letters further in the
    alphabet from what you typed. (An easy test of "rot13" is simply typing
    again the output and it should be transformed back to what you typed
