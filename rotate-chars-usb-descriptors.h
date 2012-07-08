@@ -1,5 +1,5 @@
-#ifndef ROTATE-CHARS-USB-DESCRIPTORS_H
-#define ROTATE-CHARS-USB-DESCRIPTORS_H
+#ifndef _ROTATE_CHARS_USB_DESCRIPTORS_H_
+#define _ROTATE_CHARS_USB_DESCRIPTORS_H_
 
 static const struct usb_device_descriptor dev = {
 	.bLength = USB_DT_DEVICE_SIZE,
@@ -142,4 +142,4 @@ static const char *usb_strings[] = {
 	"prototype_v0",
 };
 
-#endif /* ROTATE-CHARS-USB-DESCRIPTORS_H */
+#endif /* _ROTATE_CHARS_USB_DESCRIPTORS_H_ */
