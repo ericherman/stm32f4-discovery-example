@@ -74,7 +74,7 @@ To test an example:
    again the output and it should be transformed back to what you typed
    in the first place.)
 
- * Press 'Ctrl-A' '\' and then 'y' to close the screen session when
+ * Press 'Ctrl-A' 'k' and then 'y' to close the screen session when
    you're done.
 
 Cheers!
