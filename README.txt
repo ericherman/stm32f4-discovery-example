@@ -28,6 +28,9 @@ and Z values are returned.
 
 To build an example:
 
+ * Install the libopencm3 libraries, for example
+   git clone https://github.com/libopencm3/libopencm3.git
+
  * Install the arm developer tools (and add to PATH) with
    summon-arm-toolchain from
    https://github.com/esden/summon-arm-toolchain
@@ -38,6 +41,7 @@ To build an example:
  * install the udev rules from stlink as described in the stlink README
 
  * cd to an example directory, for instance "cd rotate-chars"
+ * if needed, adjust the path of the LIBOPENCM3_DIR variable in the Makefile
  * run "make" in the example directory
 
 

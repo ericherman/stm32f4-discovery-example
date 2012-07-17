@@ -33,13 +33,13 @@ OBJDUMP		= $(PREFIX)-objdump
 GDB		= $(PREFIX)-gdb
 # Uncomment this line if you want to use the installed (not local) library.
 #TOOLCHAIN_DIR := $(shell dirname `which $(CC)`)/../$(PREFIX)
-#TOOLCHAIN_DIR   = ../../../../..
-TOOLCHAIN_DIR   = ../libopencm3
-CFLAGS		+= -Os -g -Wall -Wextra -I$(TOOLCHAIN_DIR)/include \
+#LIBOPENCM3_DIR   = $(TOOLCHAIN_DIR)
+LIBOPENCM3_DIR   = ../../libopencm3
+CFLAGS		+= -Os -g -Wall -Wextra -I$(LIBOPENCM3_DIR)/include \
 		   -fno-common -mcpu=cortex-m4 -mthumb -msoft-float -MD -DSTM32F4
 LDSCRIPT	?= $(BINARY).ld
-LDFLAGS		+= -lc -lnosys -L$(TOOLCHAIN_DIR)/lib \
-			 -L$(TOOLCHAIN_DIR)/lib/stm32/f4 \
+LDFLAGS		+= -lc -lnosys -L$(LIBOPENCM3_DIR)/lib \
+			 -L$(LIBOPENCM3_DIR)/lib/stm32/f4 \
 		   -T$(LDSCRIPT) -nostartfiles -Wl,--gc-sections \
 		   -mthumb -mcpu=cortex-m4 -march=armv7 -mfix-cortex-m3-ldrd -msoft-float
 OBJS		+= $(BINARY).o util.o opencm3util.o
@@ -89,7 +89,7 @@ rotate-chars-stm32f.o: rotate-chars-stm32f4.c rotate-chars-usb-descriptors.h
 	@#printf "  OBJDUMP $(*).list\n"
 	$(Q)$(OBJDUMP) -S $(*).elf > $(*).list
 
-%.elf: $(OBJS) $(LDSCRIPT) $(TOOLCHAIN_DIR)/lib/stm32/f4/libopencm3_stm32f4.a
+%.elf: $(OBJS) $(LDSCRIPT) $(LIBOPENCM3_DIR)/lib/stm32/f4/libopencm3_stm32f4.a
 	@#printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -o $(*).elf $(OBJS) -lopencm3_stm32f4 $(LDFLAGS)
 
@@ -97,8 +97,8 @@ rotate-chars-stm32f.o: rotate-chars-stm32f4.c rotate-chars-usb-descriptors.h
 	@#printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(CFLAGS) -o $@ -c $<
 
-$(TOOLCHAIN_DIR)/lib/stm32/f4/libopencm3_stm32f4.a : $(TOOLCHAIN_DIR)/Makefile
-	$(MAKE) -C $(TOOLCHAIN_DIR) lib
+$(LIBOPENCM3_DIR)/lib/stm32/f4/libopencm3_stm32f4.a : $(LIBOPENCM3_DIR)/Makefile
+	$(MAKE) -C $(LIBOPENCM3_DIR) lib
 
 clean:
 	$(Q)rm -f *.o
@@ -108,7 +108,7 @@ clean:
 	$(Q)rm -f *.hex
 	$(Q)rm -f *.srec
 	$(Q)rm -f *.list
-	$(MAKE) -C $(TOOLCHAIN_DIR) clean
+	$(MAKE) -C $(LIBOPENCM3_DIR) clean
 
 %.flash: %.bin
 	st-flash write $< 0x8000000
