@@ -22,7 +22,12 @@
 ##
 
 BINARY = spi-accelerometer
-LDSCRIPT = ../stm32f4-discovery.ld
+# Uncomment this line if you want to use the installed (not local) library.
+#TOOLCHAIN_DIR := $(shell dirname `which $(CC)`)/../$(PREFIX)
+#LIBOPENCM3_DIR   = $(TOOLCHAIN_DIR)
+LIBOPENCM3_DIR   = ../../libopencm3
+#LDSCRIPT = ../stm32f4-discovery.ld
+LDSCRIPT = $(LIBOPENCM3_DIR)/examples/stm32/f4/stm32f4-discovery/stm32f4-discovery.ld
 
 PREFIX	?= arm-none-eabi
 # PREFIX		?= arm-elf
@@ -31,10 +36,7 @@ LD		= $(PREFIX)-gcc
 OBJCOPY		= $(PREFIX)-objcopy
 OBJDUMP		= $(PREFIX)-objdump
 GDB		= $(PREFIX)-gdb
-# Uncomment this line if you want to use the installed (not local) library.
-#TOOLCHAIN_DIR := $(shell dirname `which $(CC)`)/../$(PREFIX)
-#LIBOPENCM3_DIR   = $(TOOLCHAIN_DIR)
-LIBOPENCM3_DIR   = ../../libopencm3
+
 CFLAGS		+= -Os -g -Wall -Wextra -I$(LIBOPENCM3_DIR)/include \
 		   -fno-common -mcpu=cortex-m4 -mthumb -msoft-float -MD -DSTM32F4
 LDSCRIPT	?= $(BINARY).ld
