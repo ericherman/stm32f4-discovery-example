@@ -130,14 +130,12 @@ void setup_accelerometer()
 	send_command(command, data);
 }
 
-// rotates all of the letters in the buffer forward one letter.
-static void echo_with_read_motion(char *buf, int *len)
+/* populates a string buf with text like: "X: 0x23, Y: 0x42, Z: 0x02\r\n" */
+static void text_for_motion(u32 motion, char *buf, int *len)
 {
 	int i;
-	u32 motion;
 	u8 x, y, z;
 
-	motion = read_motion();
 	x = (u8) (motion >> 16);
 	y = (u8) (motion >> 8);
 	z = (u8) (motion >> 0);
@@ -183,12 +181,15 @@ static void echo_with_read_motion(char *buf, int *len)
 static void cdcacm_data_rx_cb(u8 ep)
 {
 	(void)ep;
-
 	char buf[64];
-	int len = usbd_ep_read_packet(0x01, buf, 64);
+	u32 motion;
+	int len;
+
+	len = usbd_ep_read_packet(0x01, buf, 64);
 
 	if (len) {
-		echo_with_read_motion(buf, &len);
+		motion = read_motion();
+		text_for_motion(motion, buf, &len);
 		while (usbd_ep_write_packet(0x82, buf, len) == 0) ;
 	}
 	/* flash the LEDs so we know we're doing something */
