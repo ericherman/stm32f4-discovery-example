@@ -1,8 +1,19 @@
 stm32f4-discovery-example is a very simple example of how to program
 an stm32f4 discovery board.
 
-In short:
 
+License
+-------
+
+Licensed under the terms of the GNU Lesser General Public License
+(LGPL), version 3 or later.
+
+See COPYING.GPL3 and COPYING.LGPL3 for details.
+
+
+
+In short:
+--------
 Choose an example: "cd rotate-chars"
 
 Use "make" to build the firmware.
