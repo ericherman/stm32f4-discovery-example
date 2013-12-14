@@ -6,6 +6,7 @@
 ## Copyright (C) 2010 Piotr Esden-Tempski <piotr@esden.net>
 ## Copyright (C) 2011 Fergus Noble <fergusnoble@gmail.com>
 ## Copyright (C) 2012 Kendrick Shaw <kms15@case.edu>
+## Copyright (C) 2012 Eric Herman <eric@freesa.org>
 ##
 ## This library is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU Lesser General Public License as published by
@@ -27,7 +28,7 @@ BINARY = spi-accelerometer
 #LIBOPENCM3_DIR   = $(TOOLCHAIN_DIR)
 LIBOPENCM3_DIR   = ../../libopencm3
 #LDSCRIPT = ../stm32f4-discovery.ld
-LDSCRIPT = $(LIBOPENCM3_DIR)/examples/stm32/f4/stm32f4-discovery/stm32f4-discovery.ld
+LDSCRIPT = $(LIBOPENCM3_DIR)-examples/examples/stm32/f4/stm32f4-discovery/stm32f4-discovery.ld
 
 PREFIX	?= arm-none-eabi
 # PREFIX		?= arm-elf
