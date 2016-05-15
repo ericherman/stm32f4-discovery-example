@@ -22,6 +22,9 @@
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+# extracted from https://github.com/torvalds/linux/blob/master/scripts/Lindent
+LINDENT=indent -npro -kr -i8 -ts8 -sob -l80 -ss -ncs -cp1 -il0
+
 BINARY = rotate-chars-stm32f4
 # Uncomment this line if you want to use the installed (not local) library.
 #TOOLCHAIN_DIR := $(shell dirname `which $(CC)`)/../$(PREFIX)
@@ -68,7 +71,7 @@ flash: $(BINARY).flash
 rotate-chars-stm32f.o: rotate-chars-stm32f4.c rotate-chars-usb-descriptors.h
 
 %.images: %.bin %.hex %.srec %.list
-	ls -l $*.*
+	@echo "Success."
 
 %.bin: %.elf
 	$(OBJCOPY) -Obinary $(*).elf $(*).bin
@@ -91,6 +94,22 @@ rotate-chars-stm32f.o: rotate-chars-stm32f4.c rotate-chars-usb-descriptors.h
 $(LIBOPENCM3_DIR)/lib/stm32/f4/libopencm3_stm32f4.a : $(LIBOPENCM3_DIR)/Makefile
 	$(MAKE) -C $(LIBOPENCM3_DIR) lib
 
+tidy:
+	$(LINDENT) \
+		-T usb_interface \
+		-T usb_device_descriptor \
+		-T usb_endpoint_descriptor \
+		-T usb_cdc_header_descriptor \
+		-T usb_cdc_call_management_descriptor \
+		-T usb_cdc_acm_descriptor \
+		-T usb_cdc_union_descriptor \
+		-T usb_interface_descriptor \
+		-T usb_config_descriptor \
+		-T cdcacm_functional_descriptors \
+		-T FILE \
+		-T size_t \
+		*.h *.c
+
 clean:
 	rm -f *.o *.d *.elf *.bin *.hex *.srec *.list
 	$(MAKE) -C $(LIBOPENCM3_DIR) clean
@@ -101,4 +120,3 @@ clean:
 .PHONY: images clean
 
 -include $(OBJS:.o=.d)
-

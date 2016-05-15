@@ -23,13 +23,13 @@ void rotate_letters(char *buf, unsigned int len)
 
 	for (i = 0; i < len; ++i) {
 		if (buf[i] >= 'a' && buf[i] <= 'm') {
-			buf[i] = buf[i] += 13;
+			buf[i] += 13;
 		} else if (buf[i] >= 'n' && buf[i] <= 'z') {
-			buf[i] = buf[i] -= 13;
+			buf[i] -= 13;
 		} else if (buf[i] >= 'A' && buf[i] <= 'M') {
-			buf[i] = buf[i] += 13;
+			buf[i] += 13;
 		} else if (buf[i] >= 'N' && buf[i] <= 'Z') {
-			buf[i] = buf[i] -= 13;
+			buf[i] -= 13;
 		}
 	}
 }
