@@ -55,14 +55,6 @@ OOCD_BOARD	?= olimex_stm32_h103
 # Set the BMP_PORT to a serial port and then BMP is used for flashing
 BMP_PORT        ?=
 
-# Be silent per default, but 'make V=1' will show all compiler calls.
-#ifneq ($(V),1)
-#Q := @
-#NULL := 2>/dev/null
-#else
-#LDFLAGS += -Wl,--print-gc-sections
-#endif
-
 .SUFFIXES: .elf .bin .hex .srec .list .images
 .SECONDEXPANSION:
 .SECONDARY:
@@ -70,48 +62,37 @@ BMP_PORT        ?=
 all: images
 
 images: $(BINARY).images
+
 flash: $(BINARY).flash
 
 rotate-chars-stm32f.o: rotate-chars-stm32f4.c rotate-chars-usb-descriptors.h
 
 %.images: %.bin %.hex %.srec %.list
-	@#echo "*** $* images generated ***"
+	ls -l $*.*
 
 %.bin: %.elf
-	@#printf "  OBJCOPY $(*).bin\n"
-	$(Q)$(OBJCOPY) -Obinary $(*).elf $(*).bin
+	$(OBJCOPY) -Obinary $(*).elf $(*).bin
 
 %.hex: %.elf
-	@#printf "  OBJCOPY $(*).hex\n"
-	$(Q)$(OBJCOPY) -Oihex $(*).elf $(*).hex
+	$(OBJCOPY) -Oihex $(*).elf $(*).hex
 
 %.srec: %.elf
-	@#printf "  OBJCOPY $(*).srec\n"
-	$(Q)$(OBJCOPY) -Osrec $(*).elf $(*).srec
+	$(OBJCOPY) -Osrec $(*).elf $(*).srec
 
 %.list: %.elf
-	@#printf "  OBJDUMP $(*).list\n"
-	$(Q)$(OBJDUMP) -S $(*).elf > $(*).list
+	$(OBJDUMP) -S $(*).elf > $(*).list
 
 %.elf: $(OBJS) $(LDSCRIPT) $(LIBOPENCM3_DIR)/lib/stm32/f4/libopencm3_stm32f4.a
-	@#printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(LD) -o $(*).elf $(OBJS) -lopencm3_stm32f4 $(LDFLAGS)
+	$(LD) -o $(*).elf $(OBJS) -lopencm3_stm32f4 $(LDFLAGS)
 
 %.o: %.c Makefile
-	@#printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) $(CFLAGS) -o $@ -c $<
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(LIBOPENCM3_DIR)/lib/stm32/f4/libopencm3_stm32f4.a : $(LIBOPENCM3_DIR)/Makefile
 	$(MAKE) -C $(LIBOPENCM3_DIR) lib
 
 clean:
-	$(Q)rm -f *.o
-	$(Q)rm -f *.d
-	$(Q)rm -f *.elf
-	$(Q)rm -f *.bin
-	$(Q)rm -f *.hex
-	$(Q)rm -f *.srec
-	$(Q)rm -f *.list
+	rm -f *.o *.d *.elf *.bin *.hex *.srec *.list
 	$(MAKE) -C $(LIBOPENCM3_DIR) clean
 
 %.flash: %.bin
