@@ -18,14 +18,17 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <libopencm3/cm3/common.h>
+#include <libopencm3/cm3/scb.h>
+#include <libopencm3/stm32/f4/memorymap.h>
 #include "opencm3util.h"
 
-u32 spi_read_mode_fault(u32 spi)
+uint32_t spi_read_mode_fault(uint32_t spi)
 {
 	return SPI_SR(spi) & SPI_SR_MODF;
 }
 
-void spi_clear_mode_fault(u32 spi)
+void spi_clear_mode_fault(uint32_t spi)
 {
 	if (spi_read_mode_fault(spi)) {
 		SPI_CR1(spi) = SPI_CR1(spi);

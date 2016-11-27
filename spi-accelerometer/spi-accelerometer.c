@@ -19,7 +19,11 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdint.h>
 #include <stdlib.h>
+#include <libopencm3/cm3/common.h>
+#include <libopencm3/cm3/scb.h>
+#include <libopencm3/stm32/f4/memorymap.h>
 #include <libopencm3/stm32/f4/spi.h>
 #include <libopencm3/stm32/f4/rcc.h>
 #include <libopencm3/stm32/f4/gpio.h>
@@ -29,14 +33,17 @@
 #include "util.h"
 #include "opencm3util.h"
 
-static int cdcacm_control_request(struct usb_setup_data *req, u8 ** buf,
-				  u16 * len,
-				  void (**complete) (struct usb_setup_data *
-						     req))
+static int cdcacm_control_request(usbd_device *usbd_dev,
+				  struct usb_setup_data *req, uint8_t **buf,
+				  uint16_t *len,
+				  void (**complete) (usbd_device *usbd_dev,
+						     struct usb_setup_data
+						     *req))
 {
 	/* by casting to void, we avoid an unused argument warning */
 	(void)complete;
 	(void)buf;
+	(void)usbd_dev;
 
 	switch (req->bRequest) {
 	case USB_CDC_REQ_SET_CONTROL_LINE_STATE:{
@@ -57,24 +64,25 @@ static int cdcacm_control_request(struct usb_setup_data *req, u8 ** buf,
 	return 0;
 }
 
-u8 send_command(u16 command, u8 data)
+static uint8_t send_command(uint16_t command, uint8_t data)
 {
-	u16 return_value;
-	u16 ignore;
+	uint16_t return_value;
+	uint16_t ignore;
 
 	gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI1, command);
 	ignore = spi_read(SPI1);
+	(void)ignore;
 	spi_send(SPI1, data);
 	return_value = spi_read(SPI1);
 	gpio_set(GPIOE, GPIO3);
-	return (u8) return_value;
+	return (uint8_t)return_value;
 }
 
-u8 read_motion_axis(u8 axis)
+static uint8_t read_motion_axis(uint8_t axis)
 {
-	u16 command;
-	u8 data;
+	uint16_t command;
+	uint8_t data;
 
 	data = 0;
 
@@ -89,23 +97,23 @@ u8 read_motion_axis(u8 axis)
 	return send_command(command, data);
 }
 
-u32 read_motion()
+static uint32_t read_motion(void)
 {
-	u8 x, y, z;
-	u32 combined;
+	uint8_t x, y, z;
+	uint32_t combined;
 
 	x = read_motion_axis(0x29);
 	y = read_motion_axis(0x2B);
 	z = read_motion_axis(0x2D);
 
-	combined = (((u32) x) << 16) | (((u32) y) << 8) | z;
+	combined = (((uint32_t)x) << 16) | (((uint32_t)y) << 8) | z;
 	return combined;
 }
 
-void setup_accelerometer()
+static void setup_accelerometer(void)
 {
-	u16 command;
-	u8 data;
+	uint16_t command;
+	uint8_t data;
 
 	command =
 	    /* READ bit not set */
@@ -133,14 +141,14 @@ void setup_accelerometer()
 }
 
 /* populates a string buf with text like: "X: 0x23, Y: 0x42, Z: 0x02\r\n" */
-static void text_for_motion(u32 motion, char *buf, int *len)
+static void text_for_motion(uint32_t motion, char *buf, int *len)
 {
 	int i;
-	u8 x, y, z;
+	uint8_t x, y, z;
 
-	x = (u8) (motion >> 16);
-	y = (u8) (motion >> 8);
-	z = (u8) (motion >> 0);
+	x = (uint8_t)(motion >> 16);
+	y = (uint8_t)(motion >> 8);
+	z = (uint8_t)(motion >> 0);
 
 	i = 0;
 
@@ -180,74 +188,71 @@ static void text_for_motion(u32 motion, char *buf, int *len)
 	*len = i;
 }
 
-static void cdcacm_data_rx_cb(u8 ep)
+static void cdcacm_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 {
-	(void)ep;
 	char buf[64];
-	u32 motion;
+	uint32_t motion;
 	int len;
 
-	len = usbd_ep_read_packet(0x01, buf, 64);
+	(void)ep;
+
+	len = usbd_ep_read_packet(usbd_dev, 0x01, buf, 64);
 
 	if (len) {
 		motion = read_motion();
 		text_for_motion(motion, buf, &len);
-		while (usbd_ep_write_packet(0x82, buf, len) == 0) ;
+		while (usbd_ep_write_packet(usbd_dev, 0x82, buf, len) == 0) ;
 	}
 	/* flash the LEDs so we know we're doing something */
 	gpio_toggle(GPIOD, GPIO12 | GPIO13 | GPIO14 | GPIO15);
 }
 
-static void cdcacm_set_config(u16 wValue)
+static void cdcacm_set_config(usbd_device *usbd_dev, uint16_t wValue)
 {
 	(void)wValue;
 
-	usbd_ep_setup(0x01, USB_ENDPOINT_ATTR_BULK, 64, cdcacm_data_rx_cb);
-	usbd_ep_setup(0x82, USB_ENDPOINT_ATTR_BULK, 64, NULL);
-	usbd_ep_setup(0x83, USB_ENDPOINT_ATTR_INTERRUPT, 16, NULL);
+	usbd_ep_setup(usbd_dev, 0x01, USB_ENDPOINT_ATTR_BULK, 64,
+		      cdcacm_data_rx_cb);
+	usbd_ep_setup(usbd_dev, 0x82, USB_ENDPOINT_ATTR_BULK, 64, NULL);
+	usbd_ep_setup(usbd_dev, 0x83, USB_ENDPOINT_ATTR_INTERRUPT, 16, NULL);
 
-	usbd_register_control_callback(USB_REQ_TYPE_CLASS |
+	usbd_register_control_callback(usbd_dev,
+				       USB_REQ_TYPE_CLASS |
 				       USB_REQ_TYPE_INTERFACE,
 				       USB_REQ_TYPE_TYPE |
 				       USB_REQ_TYPE_RECIPIENT,
 				       cdcacm_control_request);
 }
 
-void setup_main_clock()
+static void setup_main_clock(void)
 {
 	rcc_clock_setup_hse_3v3(&hse_8mhz_3v3[CLOCK_3V3_168MHZ]);
 }
 
-void setup_peripheral_clocks()
+static void setup_peripheral_clocks(void)
 {
-	rcc_peripheral_enable_clock(&RCC_AHB1ENR,
-				    /* GPIO A */
-				    RCC_AHB1ENR_IOPAEN |
-				    /* GPIO D */
-				    RCC_AHB1ENR_IOPDEN |
-				    /* GPIO E */
-				    RCC_AHB1ENR_IOPEEN);
-
-	rcc_peripheral_enable_clock(&RCC_AHB2ENR,
-				    /* USB OTG */
-				    RCC_AHB2ENR_OTGFSEN);
-
-	rcc_peripheral_enable_clock(&RCC_APB2ENR,
-				    /* SPI 1 */
-				    RCC_APB2ENR_SPI1EN);
+	rcc_periph_clock_enable(RCC_GPIOA);
+	rcc_periph_clock_enable(RCC_GPIOD);
+	rcc_periph_clock_enable(RCC_GPIOE);
+	rcc_periph_clock_enable(RCC_OTGFS);
+	rcc_periph_clock_enable(RCC_SPI1);
 }
 
-void setup_usb_fullspeed()
+static usbd_device *setup_usb(uint8_t *usbd_control_buffer, size_t buf_len)
 {
+	usbd_device *usbd_dev;
+
 	gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE,
 			GPIO9 | GPIO11 | GPIO12);
 	gpio_set_af(GPIOA, GPIO_AF10, GPIO9 | GPIO11 | GPIO12);
 
-	usbd_init(&otgfs_usb_driver, &dev, &config, usb_strings);
-	usbd_register_set_config_callback(cdcacm_set_config);
+	usbd_dev = usbd_init(&otgfs_usb_driver, &dev, &config,
+			     usb_strings, 3, usbd_control_buffer, buf_len);
+	usbd_register_set_config_callback(usbd_dev, cdcacm_set_config);
+	return usbd_dev;
 }
 
-void setup_spi()
+static void setup_spi(void)
 {
 	/* chip select */
 	gpio_mode_setup(GPIOE, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO3);
@@ -282,7 +287,7 @@ void setup_spi()
 	spi_enable(SPI1);
 }
 
-void setup_leds()
+static void setup_leds(void)
 {
 	/* enable the four LEDs */
 	gpio_mode_setup(GPIOD, GPIO_MODE_OUTPUT,
@@ -293,13 +298,17 @@ void setup_leds()
 
 int main(void)
 {
+	usbd_device *usbd_dev;
+	uint8_t usbd_control_buffer[128];
+
 	setup_main_clock();
 	setup_peripheral_clocks();
-	setup_usb_fullspeed();
+	usbd_dev = setup_usb(usbd_control_buffer, 128);
 	setup_spi();
 	setup_leds();
 	setup_accelerometer();
 
-	while (1)
-		usbd_poll();
+	while (1) {
+		usbd_poll(usbd_dev);
+	}
 }

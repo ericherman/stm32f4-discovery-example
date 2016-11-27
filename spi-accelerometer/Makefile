@@ -6,7 +6,7 @@
 ## Copyright (C) 2010 Piotr Esden-Tempski <piotr@esden.net>
 ## Copyright (C) 2011 Fergus Noble <fergusnoble@gmail.com>
 ## Copyright (C) 2012 Kendrick Shaw <kms15@case.edu>
-## Copyright (C) 2012 Eric Herman <eric@freesa.org>
+## Copyright (C) 2012,2016 Eric Herman <eric@freesa.org>
 ##
 ## This library is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU Lesser General Public License as published by
@@ -42,13 +42,18 @@ OBJCOPY		= $(PREFIX)-objcopy
 OBJDUMP		= $(PREFIX)-objdump
 GDB		= $(PREFIX)-gdb
 
-CFLAGS		+= -Os -g -Wall -Wextra -I$(LIBOPENCM3_DIR)/include \
-		   -fno-common -mcpu=cortex-m4 -mthumb -msoft-float -MD -DSTM32F4
+CFLAGS         += -Os -g -Wall -Wextra -I$(LIBOPENCM3_DIR)/include \
+                -Wimplicit-function-declaration -Wundef -Wshadow \
+                -Wredundant-decls -Wmissing-prototypes -Wstrict-prototypes \
+                -fno-common -ffunction-sections -fdata-sections \
+                -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 \
+                -MD -DSTM32F4
+
 LDSCRIPT	?= $(BINARY).ld
 LDFLAGS		+= -lc -lnosys -L$(LIBOPENCM3_DIR)/lib \
 			 -L$(LIBOPENCM3_DIR)/lib/stm32/f4 \
 		   -T$(LDSCRIPT) -nostartfiles -Wl,--gc-sections \
-		   -mthumb -mcpu=cortex-m4 -march=armv7 -mfix-cortex-m3-ldrd -msoft-float
+		   -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16
 OBJS		+= $(BINARY).o util.o opencm3util.o
 
 OOCD		?= openocd
@@ -96,6 +101,8 @@ $(LIBOPENCM3_DIR)/lib/stm32/f4/libopencm3_stm32f4.a : $(LIBOPENCM3_DIR)/Makefile
 
 tidy:
 	$(LINDENT) \
+		-T usbd_device \
+		-T usb_setup_data \
 		-T usb_interface \
 		-T usb_device_descriptor \
 		-T usb_endpoint_descriptor \
@@ -108,6 +115,9 @@ tidy:
 		-T cdcacm_functional_descriptors \
 		-T FILE \
 		-T size_t \
+		-T uint8_t \
+		-T uint16_t \
+		-T uint32_t \
 		*.h *.c
 
 clean:
