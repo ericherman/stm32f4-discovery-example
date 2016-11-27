@@ -41,6 +41,7 @@ To build an example:
 
  * Install the libopencm3 libraries, for example
    git clone https://github.com/libopencm3/libopencm3.git
+   git clone https://github.com/libopencm3/libopencm3-examples.git
 
  * Install the arm developer tools (and add to PATH) with
    debian:
