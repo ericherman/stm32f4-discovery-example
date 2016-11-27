@@ -43,8 +43,11 @@ To build an example:
    git clone https://github.com/libopencm3/libopencm3.git
 
  * Install the arm developer tools (and add to PATH) with
-   summon-arm-toolchain from
-   https://github.com/esden/summon-arm-toolchain
+   debian:
+   sudo apt-get install \
+	gcc-arm-none-eabi \
+	gdb-arm-none-eabi \
+	binutils-arm-none-eabi
 
  * Build stlink from https://github.com/texane/stlink
  * put the st-flash command from stlink somewhere in your path
