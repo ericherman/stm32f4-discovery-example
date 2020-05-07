@@ -40,8 +40,8 @@ and Z values are returned.
 To build an example:
 
  * Install the libopencm3 libraries, for example
-   git clone https://github.com/libopencm3/libopencm3.git
-   git clone https://github.com/libopencm3/libopencm3-examples.git
+   git clone -o upstream https://github.com/libopencm3/libopencm3.git
+   git clone -o upstream https://github.com/libopencm3/libopencm3-examples.git
 
  * Install the arm developer tools (and add to PATH) with
    debian:
@@ -50,9 +50,23 @@ To build an example:
 	gdb-arm-none-eabi \
 	binutils-arm-none-eabi
 
+ * Install stlink
+   sudo apt install stlink-tools
+   st-flash --version
+   st-info --probe
+
+OR:
  * Build stlink from https://github.com/texane/stlink
+   git clone -o upstream https://github.com/texane/stlink
+   mkdir -pv build-stlink
+   cd build-stlink
+   export STLINK_PREFIX=${HOME}/builds/stlink
+   cmake -DCMAKE_INSTALL_PREFIX=$STLINK_PREFIX ../stlink
+   make install
  * put the st-flash command from stlink somewhere in your path
-   (e.g. by creating a soft link)
+   export LD_LIBRARY_PATH=${STLINK_PREFIX}/lib:
+   export PATH=$PATH:${STLINK_PREFIX}/bin
+   st-flash --version
  * install the udev rules from stlink as described in the stlink README
 
  * cd to an example directory, for instance "cd rotate-chars"

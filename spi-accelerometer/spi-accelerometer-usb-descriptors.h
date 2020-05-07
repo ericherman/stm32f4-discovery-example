@@ -1,5 +1,9 @@
 /* spi-accelerometer-usb-descriptors.h
-   Copyright (C) 2012, 2016, 2018 Eric Herman <eric@freesa.org>
+   Copyright (C) 2010 Gareth McMullin <gareth@blacksphere.co.nz>
+   Copyright (C) 2012, 2016, 2018, 2020 Eric Herman <eric@freesa.org>
+
+   This file was derived from the libopencm3 project.
+   https://github.com/libopencm3/libopencm3-examples.git
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as

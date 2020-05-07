@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2010 Gareth McMullin <gareth@blacksphere.co.nz>
  * Copyright (C) 2012 Kendrick Shaw <kms15@case.edu>
- * Copyright (C) 2012 Eric Herman <eric@freesa.org>
+ * Copyright (C) 2012, 2020 Eric Herman <eric@freesa.org>
  *
  * This library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -21,24 +21,26 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-#include <libopencm3/cm3/common.h>
-#include <libopencm3/cm3/scb.h>
-#include <libopencm3/stm32/f4/memorymap.h>
-#include <libopencm3/stm32/f4/spi.h>
-#include <libopencm3/stm32/f4/rcc.h>
-#include <libopencm3/stm32/f4/gpio.h>
+
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/gpio.h>
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/cdc.h>
+#include <libopencm3/cm3/scb.h>
+
 #include "spi-accelerometer-usb-descriptors.h"
 #include "util.h"
 #include "opencm3util.h"
 
-static int cdcacm_control_request(usbd_device *usbd_dev,
-				  struct usb_setup_data *req, uint8_t **buf,
-				  uint16_t *len,
-				  void (**complete) (usbd_device *usbd_dev,
-						     struct usb_setup_data
-						     *req))
+/* CDC (ACM): Communication Device Class (Abstract Control Model) */
+
+static enum usbd_request_return_codes  //
+cdcacm_control_request(usbd_device *usbd_dev,
+                      struct usb_setup_data *req,
+                      uint8_t **buf,
+                      uint16_t *len,
+                      void (**complete)(usbd_device *usbd_dev,
+                                        struct usb_setup_data *req))
 {
 	/* by casting to void, we avoid an unused argument warning */
 	(void)complete;
@@ -53,15 +55,15 @@ static int cdcacm_control_request(usbd_device *usbd_dev,
 			 * spec, and we don't advertise it in the ACM
 			 * functional descriptor.
 			 */
-			return 1;
+			return USBD_REQ_HANDLED;
 		}
 	case USB_CDC_REQ_SET_LINE_CODING:
 		if (*len < sizeof(struct usb_cdc_line_coding))
-			return 0;
+			return USBD_REQ_NOTSUPP;
 
-		return 1;
+		return USBD_REQ_HANDLED;
 	}
-	return 0;
+	return USBD_REQ_NOTSUPP;
 }
 
 static uint8_t send_command(uint16_t command, uint8_t data)
@@ -226,7 +228,7 @@ static void cdcacm_set_config(usbd_device *usbd_dev, uint16_t wValue)
 
 static void setup_main_clock(void)
 {
-	rcc_clock_setup_hse_3v3(&hse_8mhz_3v3[CLOCK_3V3_168MHZ]);
+	rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_168MHZ]);
 }
 
 static void setup_peripheral_clocks(void)
