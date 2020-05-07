@@ -16,6 +16,9 @@ In short:
 --------
 Choose an example: "cd rotate-chars"
 
+Ensure arm dev tools, libopencm3, and stlink are installed,
+and the paths match in the Makefile.
+
 Use "make" to build the firmware.
 
 Use "make flash" to push the firmware to the stm32f4-discovery.
